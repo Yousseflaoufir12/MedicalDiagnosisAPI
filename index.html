@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result-section {
+            display: none;
+            margin-top: 20px;
+        }
+        .result-section div {
+            margin-bottom: 10px;
+        }
+        .result-section div span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagnostic Application</h1>
+        <form id="symptomForm">
+            <input type="text" id="symptoms" placeholder="Enter symptoms, separated by commas">
+            <button type="button" onclick="getDiagnosis()">Get Diagnosis</button>
+        </form>
+        <div class="result-section" id="resultSection">
+            <div><span>Description:</span> <span id="description"></span></div>
+            <div><span>Diet:</span> <span id="diet"></span></div>
+            <div><span>Medication:</span> <span id="medication"></span></div>
+            <div><span>Workout:</span> <span id="workout"></span></div>
+            <div><span>Precautions:</span> <span id="precautions"></span></div>
+        </div>
+    </div>
+
+    <script>
+        function getDiagnosis() {
+            const symptoms = document.getElementById('symptoms').value.split(',').map(symptom => symptom.trim());
+            console.log('Symptoms:', symptoms);
+
+            fetch('/get_diagnosis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symptoms })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response  not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response:', data);
+                document.getElementById('description').innerText = data.description;
+                document.getElementById('diet').innerText = data.diet;
+                document.getElementById('medication').innerText = data.medication;
+                document.getElementById('workout').innerText = data.workout;
+                document.getElementById('precautions').innerText = data.precautions;
+                document.getElementById('resultSection').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
